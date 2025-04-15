@@ -6,6 +6,20 @@
 require_once 'functions.php';
 require_once 'db.php';
 
+if(isset($_GET['validate'])) {
+    if(isset($_GET['token'])) {
+        // Validate the token
+        $token = $_GET['token'];
+        echo validateToken($token);
+    } else {
+        $username = $_GET['username'];
+        $password = $_GET['password'];
+        // Validate the user
+        echo validateUser($username, $password);
+    }
+}
+
+
 if(isset($_GET['getAll'])) {
     // Get all data from the database
     $data = getAllData();
@@ -13,16 +27,17 @@ if(isset($_GET['getAll'])) {
 } elseif (isset($_POST['add'])) {
     // Add data to the database
     $data = $_POST['data'];
-    addData($data);
+//    echo $data;
+    echo addData($data);
 } elseif (isset($_POST['delete'])) {
     // Delete data from the database
     $id = $_POST['id'];
-    deleteData($id);
+    echo deleteData($id);
 } elseif (isset($_POST['update'])) {
     // Update data in the database
     $id = $_POST['id'];
     $data = $_POST['data'];
-    updateData($id, $data);
+    echo updateData($id, $data);
 } else {
     echo "Invalid request";
 }
