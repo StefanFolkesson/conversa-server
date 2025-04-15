@@ -2,7 +2,7 @@
 // database connection
 $servername = "localhost";
 $username = "root";
-$password = "root";
+$password = "";
 $dbname = "conversa";
 $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
