@@ -2,15 +2,15 @@
 // add the function to get all data from the database
 function getAllData() {
     global $conn;
-    $sql = "SELECT * FROM data";
+    $sql = "SELECT data.id,display_name,title,message,image,date,author FROM data inner join users on data.author = users.id ORDER BY date DESC";
     $result = $conn->query($sql);
-    $data = array();
+    $data = [];
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            $data[] = $row;
+            array_push($data, $row);
         }
     }
-    return json_encode($data);
+    return json_encode($data,true);
 }
 // The databasestructure is as follows:
 // id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY
@@ -63,10 +63,10 @@ function getData($id) {
     $returnarray = array();
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            $returnarray[] = $row;
+            array_push($returnarray, $row);
         }
     }
-    return json_encode($returnarray);
+    return json_encode($returnarray,true);
 }
 
 
@@ -79,9 +79,9 @@ function validateToken($token){
     $result = $stmt->get_result();
     if($result->num_rows > 0) {
         setNewExpiration($token); // Update the expiration time
-        return json_encode(array("status" => "success", "message" => "Token is valid."));
+        return true;
     } else {
-        return json_encode(array("status" => "error", "message" => "Token is invalid or expired."));
+        return false;
     }
 }
 function validateUser($username,$password){
@@ -106,9 +106,9 @@ function validateUser($username,$password){
         $row['valid_token'] = $newToken;
         // Set the token expiration to 1 hour from now
         $newEx = setNewExpiration($newToken);
-        return json_encode(array("status" => "success", "message" => "User is valid.", "token" => $row['valid_token']));
+        return true;
     } else {
-        return json_encode(array("status" => "error", "message" => "User is invalid."));
+        return false;
     }
 }
 
@@ -123,4 +123,71 @@ function setNewExpiration($token) {
     } else {
         return json_encode(array("status" => "error", "message" => $stmt->error));
     }
+}
+
+function isAdmin($username){
+    global $conn;
+    $sql = "SELECT * FROM users WHERE username = ? AND admin = 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function getUsername($token){
+    global $conn;
+    $sql = "SELECT * FROM users WHERE valid_token = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['username'];
+    } else {
+        return false;
+    }
+}
+
+function isYours($id, $token){
+    global $conn;
+    $sql = "SELECT * FROM data WHERE id = ? AND author = (SELECT id FROM users WHERE valid_token = ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("is", $id, $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function addUser($data){
+    global $conn;
+    $sql = "INSERT INTO users (username, password, display_name, email, admin) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssi", $data['username'], $data['password'], $data['display_name'], $data['email'], $data['admin']);
+    if ($stmt->execute()) {
+        return json_encode(array("status" => "success", "id" => $stmt->insert_id));
+    } else {
+        return json_encode(array("status" => "error", "message" => $stmt->error));
+    }
+}
+
+function getAllUsers(){
+    global $conn;
+    $sql = "SELECT * FROM users";
+    $result = $conn->query($sql);
+    $data = [];
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            array_push($data, $row);
+        }
+    }
+    return json_encode($data,true);
 }

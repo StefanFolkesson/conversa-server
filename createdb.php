@@ -32,6 +32,7 @@ if ($conn->error) {
 // password varchar(255) NOT NULL
 // display_name varchar(255) NOT NULL
 // email varchar(255) NOT NULL UNIQUE
+// admin int(11) NOT NULL DEFAULT 0
 // valid_token varchar(255) NOT NULL UNIQUE
 // token_expiration datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 
@@ -41,6 +42,7 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     display_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    admin INT(11) NOT NULL DEFAULT 0,
     valid_token VARCHAR(255) NOT NULL UNIQUE,
     token_expiration DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 )";
@@ -51,7 +53,7 @@ if ($conn->error) {
     echo "Table 'users' created successfully<br/>";
 }
 // Insert three users into the users table, kalle, pelle, stina
-$sql = "INSERT INTO `users` (`id`, `username`, `password`, `display_name`, `email`,`valid_token`,`token_expiration`) VALUES (NULL, 'admin', 'admin', 'admin', 'admin@admin.admin','1', current_timestamp())";
+$sql = "INSERT INTO `users` (`id`, `username`, `password`, `display_name`, `email`,`admin`,`valid_token`,`token_expiration`) VALUES (NULL, 'admin', 'admin', 'admin', 'admin@admin.admin','1','1', current_timestamp())";
 $conn->query($sql);
 if ($conn->error) {
     die("Error inserting data: " . $conn->error);
