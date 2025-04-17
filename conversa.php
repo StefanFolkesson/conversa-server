@@ -8,29 +8,33 @@ require_once 'db.php';
 $validated = false;
 $admin = false;
 
-if(isset($_GET['validate'])) {
-    if(isset($_GET['token'])) {
-        // Validate the token
-        $token = $_GET['token'];
-        $validated = validateToken($token);
-        if($validated) {
-            $username = getUsername($token);
-            $admin = isAdmin($username);
-        }
-        
-    } else {
-        $username = $_GET['username'];
-        $password = $_GET['password'];
-        // Validate the user
-        $validated = validateUser($username, $password);
-        if($validated)
-            $admin = isAdmin($username);
-    }
+if(isset($_GET['token'])) {
+    // Validate the token
+    $token = $_GET['token'];
+    $validated = validateToken($token);
     if($validated) {
-        echo json_encode(array("status" => "success", "message" => "User validated successfully.", "admin" => $admin));
+        $username = getUsername($token);
+        $admin = isAdmin($username);
+    }
+    else {
+        echo json_encode(array("status" => "error", "message" => "Invalid token."));
+        exit;
+    }
+} 
+
+if(isset($_GET['validate'])) {
+    $username = $_GET['username'];
+    $password = $_GET['password'];
+    // Validate the user
+    $token = validateUser($username, $password);
+    $validated = $token==0 ? false : true;
+    if($validated) {
+        $admin = isAdmin($username);
+        echo json_encode(array("status" => "success", "message" => "User validated successfully.", "token" => $token, "admin" => $admin));
     } else {
         echo json_encode(array("status" => "error", "message" => "Invalid username or password."));
     }
+    exit;
 }
 
 
