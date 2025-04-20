@@ -21,7 +21,6 @@ if(isset($_GET['token'])) {
         exit;
     }
 } 
-
 if(isset($_GET['validate'])) {
     $username = $_GET['username'];
     $password = $_GET['password'];

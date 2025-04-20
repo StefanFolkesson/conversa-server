@@ -24,7 +24,7 @@ function addData($data) {
     global $conn;
     $sql = "INSERT INTO data (author, title, message, image) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $data['author'], $data['title'], $data['message'], $data['image']);
+    $stmt->bind_param("isss", $data['author'], $data['title'], $data['message'], $data['image']);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "id" => $stmt->insert_id));
     } else {
@@ -46,7 +46,7 @@ function updateData($id, $data) {
     global $conn;
     $sql = "UPDATE data SET author = ?, title = ?, message = ?, image = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $data['author'], $data['title'], $data['message'], $data['image'], $id);
+    $stmt->bind_param("isssi", $data['author'], $data['title'], $data['message'], $data['image'], $id);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "message" => "Data updated successfully."));
     } else {
