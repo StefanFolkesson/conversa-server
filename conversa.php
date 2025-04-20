@@ -25,11 +25,17 @@ if(isset($_GET['validate'])) {
     $username = $_GET['username'];
     $password = $_GET['password'];
     // Validate the user
-    $token = validateUser($username, $password);
-    $validated = $token==0 ? false : true;
+    $answer = validateUser($username, $password);
+    if($answer == 0) {
+        echo json_encode(array("status" => "error", "message" => "Invalid username or password."));
+        exit;
+    } 
+    $token = $answer[0];
+    $id = $answer[1];
+    $validated = true;
     if($validated) {
         $admin = isAdmin($username);
-        echo json_encode(array("status" => "success", "message" => "User validated successfully.", "token" => $token, "admin" => $admin));
+        echo json_encode(array("status" => "success", "message" => "User validated successfully.", "token" => $token, "admin" => $admin, "id" => $id));
     } else {
         echo json_encode(array("status" => "error", "message" => "Invalid username or password."));
     }

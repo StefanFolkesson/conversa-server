@@ -106,7 +106,7 @@ function validateUser($username,$password){
         $row['valid_token'] = $newToken;
         // Set the token expiration to 1 hour from now
         $newEx = setNewExpiration($newToken);
-        return $newToken;
+        return [$newToken,$row['id']];
     } else {
         return 0;
     }
