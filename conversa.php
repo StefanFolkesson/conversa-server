@@ -77,6 +77,18 @@ if(isset($_GET['getAll'])) {
 } elseif( isset($_POST['getAllUsers']) && $admin) {
     // Get all users from the database
     echo getAllUsers();
+} else if( isset($_POST['deleteUser']) && $admin) {
+    // Delete user from the database
+    $id = $_POST['id'];
+    echo deleteUser($id);
+} else if( isset($_POST['updateUser'])&& $validated) {
+    // Update user in the database
+    $id = $_POST['id'];
+    $data = $_POST['data'];
+    echo updateUser($id, $data);
+} elseif (isset($_GET['logout'])) {
+    // Logout the user
+    logout($token);
 }
 else {
     echo "Invalid request";

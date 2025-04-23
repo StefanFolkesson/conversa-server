@@ -26,7 +26,7 @@ function addData($data) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isss", $data['author'], $data['title'], $data['message'], $data['image']);
     if ($stmt->execute()) {
-        return json_encode(array("status" => "success", "id" => $stmt->insert_id));
+        return json_encode(array("status" => "success", "message" => "Post added", "id" => $stmt->insert_id));
     } else {
         return json_encode(array("status" => "error", "message" => $stmt->error));
     }
@@ -44,7 +44,16 @@ function deleteData($id) {
 }
 function updateData($id, $data) {
     global $conn;
-    $sql = "UPDATE data SET author = ?, title = ?, message = ?, image = ? WHERE id = ?";
+    if(isset($data['image'])) {
+        $data['image'] = null;
+    }
+    if(!isset($data['title'])) {
+        $data['title'] = null;
+    }
+    if(!isset($data['message'])) {
+        $data['message'] = null;
+    }
+    $sql = "UPDATE data SET title = COALESCE(?, title), message = COALESCE(?, message), image = COALESCE(?, image) WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isssi", $data['author'], $data['title'], $data['message'], $data['image'], $id);
     if ($stmt->execute()) {
@@ -167,6 +176,20 @@ function isYours($id, $token){
     }
 }
 
+function isYou($id, $token){
+    global $conn;
+    $sql = "SELECT * FROM users WHERE id = ? AND valid_token = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("is", $id, $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if($result->num_rows > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function addUser($data){
     global $conn;
     $sql = "INSERT INTO users (username, password, display_name, email, admin) VALUES (?, ?, ?, ?, ?)";
@@ -190,4 +213,41 @@ function getAllUsers(){
         }
     }
     return json_encode($data,true);
+}
+
+function updateUser(){  // Should work havet tested it yet
+    // Get user data first then update the user
+    global $conn;
+    if (!isset($_POST['id']) || !isset($_POST['data'])) {
+        return json_encode(array("status" => "error", "message" => "Invalid request."));
+    }
+    $id = $_POST['id'];
+    $data = $_POST['data'];
+    $token = $_GET['token'];
+    // Check if the user is an admin or the owner of the data
+    if(!isYou($id, $token)) {
+        return json_encode(array("status" => "error", "message" => "You cannot update this user."));
+    }
+    // If display_name is not set dont update it
+    if(!isset($data['display_name'])) {
+        $data['display_name'] = null;
+    }
+    // If email is not set dont update it
+    if(!isset($data['email'])) {
+        $data['email'] = null;
+    }
+    // If password is not set dont update it
+    if(!isset($data['password'])) {
+        $data['password'] = null;
+    }
+    // Dont update the fields that are null
+    $sql = "UPDATE users SET display_name = COALESCE(?, display_name), email = COALESCE(?, email), password = COALESCE(?, password) WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssi", $data['display_name'], $data['email'], $data['password'], $id);
+    if ($stmt->execute()) {
+        return json_encode(array("status" => "success", "message" => "User updated successfully."));
+    } else {
+        return json_encode(array("status" => "error", "message" => $stmt->error));
+    }    
+
 }

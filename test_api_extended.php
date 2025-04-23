@@ -53,6 +53,26 @@ $token='admin'; // Giltig token för testning
 
 echo "=== VALIDERINGSTESTER ===<br/>";
 
+echo "Test 3: Validering med giltigt användarnamn och lösenord...<br/>";
+$url = $baseUrl . '?validate&username=admin&password=adminadmin';
+$response = getRequest($url);
+echo "Svar: " . $response . "<br/><br/>";
+
+/* Testing the updateuser only 
+
+// 1. Updateuser med giltig token
+echo "Test 1: Uppdatera användare med giltig token...<br/>";
+$url = $baseUrl . '?token='.$token;
+$postData = [
+    'id' => '1',
+    'updateUser' => '1',
+    'data[password]' => 'adminadmin',
+    'data[email]' => 'mr@biggg.se'];
+    $response = postRequest($url, $postData);
+    echo "Svar: " . $response . "<br/><br/>";
+    die();
+*/
+
 
 // 3. Validering med giltigt användarnamn och lösenord
 echo "Test 3: Validering med giltigt användarnamn och lösenord...<br/>";
