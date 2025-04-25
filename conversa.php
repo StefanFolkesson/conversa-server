@@ -7,7 +7,11 @@ require_once 'functions.php';
 require_once 'db.php';
 $validated = false;
 $admin = false;
-
+if(isset($_GET['logout'])) {
+    // Logout the user
+    echo logout($token);
+    exit;
+}
 if(isset($_GET['token'])) {
     // Validate the token
     $token = $_GET['token'];
@@ -86,11 +90,7 @@ if(isset($_GET['getAll'])) {
     $id = $_POST['id'];
     $data = $_POST['data'];
     echo updateUser($id, $data);
-} elseif (isset($_GET['logout'])) {
-    // Logout the user
-    echo logout($token);
-}
-else {
+} else {
     echo "Invalid request";
 }
 ?>
