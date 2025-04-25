@@ -88,7 +88,7 @@ if(isset($_GET['getAll'])) {
     echo updateUser($id, $data);
 } elseif (isset($_GET['logout'])) {
     // Logout the user
-    logout($token);
+    echo logout($token);
 }
 else {
     echo "Invalid request";

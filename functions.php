@@ -55,7 +55,7 @@ function updateData($id, $data) {
     }
     $sql = "UPDATE data SET title = COALESCE(?, title), message = COALESCE(?, message), image = COALESCE(?, image) WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isssi", $data['title'], $data['message'], $data['image'], $id);
+    $stmt->bind_param("sssi", $data['title'], $data['message'], $data['image'], $id);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "message" => "Data updated successfully."));
     } else {
