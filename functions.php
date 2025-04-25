@@ -192,7 +192,7 @@ function isYou($id, $token){
 
 function addUser($data){
     global $conn;
-    $sql = "INSERT INTO users (username, password, display_name, email, admin, valid_token) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (username, password, display_name, email, admin, valid_token) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssis", $data['username'], $data['password'], $data['display_name'], $data['email'], $data['admin'],$data['username']);
     if ($stmt->execute()) {
@@ -254,9 +254,6 @@ function updateUser(){  // Should work havet tested it yet
 
 function deleteUser($id){
     global $conn;
-    if($admin == false) {
-        return json_encode(array("status" => "error", "message" => "You are not allowed to delete users."));
-    }
     $sql = "DELETE FROM users WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
