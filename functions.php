@@ -224,7 +224,7 @@ function updateUser(){  // Should work havet tested it yet
     $id = $_POST['id'];
     $data = $_POST['data'];
     $token = $_GET['token'];
-    // Check if the user is an admin or the owner of the data
+    // Check if the user  or the owner of the data
     if(!isYou($id, $token)) {
         return json_encode(array("status" => "error", "message" => "You cannot update this user."));
     }
@@ -251,3 +251,32 @@ function updateUser(){  // Should work havet tested it yet
     }    
 
 }
+
+function deleteUser($id){
+    global $conn;
+    if($admin == false) {
+        return json_encode(array("status" => "error", "message" => "You are not allowed to delete users."));
+    }
+    $sql = "DELETE FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+        return json_encode(array("status" => "success", "message" => "User deleted successfully."));
+    } else {
+        return json_encode(array("status" => "error", "message" => $stmt->error));
+    }
+}
+
+function logout($token) {
+    global $conn;
+    // Set expiration time to the past to invalidate the token
+    $sql = "UPDATE users SET token_expiration = NOW() WHERE valid_token = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $token);
+    if ($stmt->execute()) {
+        return json_encode(array("status" => "success", "message" => "User logged out successfully."));
+    } else {
+        return json_encode(array("status" => "error", "message" => $stmt->error));
+    }
+}
+
