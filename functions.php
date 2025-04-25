@@ -105,7 +105,7 @@ function validateUser($username,$password){
         // Generate a new token and update the database
         $newToken = bin2hex(random_bytes(16)); // Generate a random token
         // temporary use of token, should be replaced with a more secure method
-        $newToken = $row['username'];
+      //  $newToken = $row['username'];
         $updateSql = "UPDATE users SET valid_token = ? WHERE id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bind_param("si", $newToken, $row['id']);
