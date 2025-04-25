@@ -192,9 +192,9 @@ function isYou($id, $token){
 
 function addUser($data){
     global $conn;
-    $sql = "INSERT INTO users (username, password, display_name, email, admin) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (username, password, display_name, email, admin, valid_token) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $data['username'], $data['password'], $data['display_name'], $data['email'], $data['admin']);
+    $stmt->bind_param("ssssis", $data['username'], $data['password'], $data['display_name'], $data['email'], $data['admin'],$data['username']);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "id" => $stmt->insert_id));
     } else {
