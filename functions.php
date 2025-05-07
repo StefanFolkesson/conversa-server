@@ -2,7 +2,7 @@
 // add the function to get all data from the database
 function getAllData() {
     global $conn;
-    $sql = "SELECT data.id,display_name,title,message,image,date,author FROM data inner join users on data.author = users.id ORDER BY date DESC";
+    $sql = "SELECT data.id,display_name,title,message,image,date,author,target FROM data inner join users on data.author = users.id ORDER BY date DESC";
     $result = $conn->query($sql);
     $data = [];
     if ($result->num_rows > 0) {
@@ -22,9 +22,15 @@ function getAllData() {
 
 function addData($data) {
     global $conn;
-    $sql = "INSERT INTO data (author, title, message, image) VALUES (?, ?, ?, ?)";
+    if(!isset($data['image'])) {
+        $data['image'] = null;
+    }
+    if(!isset($data['target'])) {
+        $data['target'] = null;
+    }
+    $sql = "INSERT INTO data (author, title, message, image,target) VALUES (?, ?, ?, ?,?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isss", $data['author'], $data['title'], $data['message'], $data['image']);
+    $stmt->bind_param("isss", $data['author'], $data['title'], $data['message'], $data['image'], $data['target']);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "message" => "Post added", "id" => $stmt->insert_id));
     } else {
