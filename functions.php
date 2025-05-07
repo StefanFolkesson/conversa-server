@@ -23,14 +23,14 @@ function getAllData() {
 function addData($data) {
     global $conn;
     if(!isset($data['image'])) {
-        $data['image'] = null;
+        $data['image'] = "";
     }
     if(!isset($data['target'])) {
         $data['target'] = null;
     }
     $sql = "INSERT INTO data (author, title, message, image,target) VALUES (?, ?, ?, ?,?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isss", $data['author'], $data['title'], $data['message'], $data['image'], $data['target']);
+    $stmt->bind_param("isssi", $data['author'], $data['title'], $data['message'], $data['image'], $data['target']);
     if ($stmt->execute()) {
         return json_encode(array("status" => "success", "message" => "Post added", "id" => $stmt->insert_id));
     } else {
